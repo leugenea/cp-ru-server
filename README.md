@@ -12,8 +12,8 @@ pip install -r requirements.txt
 ```
 
 # Running
-Copy file config_example.py to config.py and edit in config.py you login/password for RuTracker as well as host and port you want.
-By default, server will listen on 0.0.0.0:9000.
+Copy file `config_example.py` to `config.py` and edit in config.py you login/password for RuTracker as well as host and port you want.
+By default, server will listen on `0.0.0.0:9000`.
 ## Note
 Your CouchPotato server **MUST** have access to your PC with this server to send search requests.
 Also you should check if RuTracker is available from your network.
@@ -23,20 +23,20 @@ Also you should check if RuTracker is available from your network.
 * You add custom search provider in CouchPotato settings like described [here](https://github.com/CouchPotato/CouchPotatoServer/wiki/CouchPotato-Torrent-Provider)
 * As host you paste address of host and port
 * When you search for a movie in CP:
-** CP server'll send search request to cp-ru-server instance
-** cp-ru-server will parse it and search on RuTracker for releases with such name and IMDB id
-** you'll see found releases as always
+  * CP server'll send search request to cp-ru-server instance
+  * cp-ru-server will parse it and search on RuTracker for releases with such name and IMDB id
+  * you'll see found releases as always
 * When you want to add release to queue:
-** CP server'll send download request to cp-ru-server instance
-** as long as your client should be authorized on RuTracker for downloading, download links in JSON answers to CP are pointing cp-ru-server's address and port, but with different arguments
-** so on torrent file download request .torrent file for choosen release will be downloaded into `cache` subdirectory of current directory
-** aaaaand will be sent to CP server as a response
+  * CP server'll send download request to cp-ru-server instance
+  * as long as your client should be authorized on RuTracker for downloading, download links in JSON answers to CP are pointing cp-ru-server's address and port, but with different arguments
+  * so on torrent file download request .torrent file for choosen release will be downloaded into `cache` subdirectory of current directory
+  * aaaaand will be sent to CP server as a response
 
 # What's working for now?
 * Search on RuTracker, but with some limitations:
-** at least one of words should be at least 3 characters (because I remove short words (IMDB having [some issues with namings sometimes](http://www.imdb.com/find?q=alice+in+wonderland)))
-** I'm not sure if searching using russian letters is working
-** I'm not sure if searching for russian/USSR movies is working (because of Unicode and stuff), also see previous item
+  * at least one of words should be at least 3 characters (because I remove short words (IMDB having [some issues with namings sometimes](http://www.imdb.com/find?q=alice+in+wonderland)))
+  * I'm not sure if searching using russian letters is working
+  * I'm not sure if searching for russian/USSR movies is working (because of Unicode and stuff), also see previous item
 
 # I love this! But…
 ## … but I need more features / not this / not exactly this / I want to use [Sonarr](https://sonarr.tv/) / I want to use [Headphones](https://github.com/rembo10/headphones) (underline whatever applicable)
