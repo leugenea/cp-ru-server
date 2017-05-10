@@ -1,6 +1,6 @@
 # CouchPotato search provider server for russian trackers
 
-This is server for providing search API for [CouchPotato](https://couchpota.to/) for some russian trackers like [RuTracker](https://rutracker.org/).
+This is server for providing search API for [CouchPotato](https://couchpota.to/) for some russian trackers like [RuTracker](https://rutracker.net/).
 
 # Installation
 ## Python and PIP installation

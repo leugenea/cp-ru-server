@@ -22,7 +22,7 @@ except ImportError:
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-rutracker_engine = rutracker.rutracker()
+rutracker_engine = rutracker.RuTracker()
 imdb_engine = IMDb()
 
 
@@ -46,7 +46,7 @@ class SearchResult(object):
         self.imdb_id = imdb_id if imdb_id.startswith('tt') else 'tt' + imdb_id
 
         self.id = rutracker.id_by_dl_link(self.link)
-        self.down_link = 'http://{}:{}/?tid={}'.format('leugenea.io.bysh.me', PORT_NUMBER, self.id)
+        self.down_link = 'http://{}:{}/?tid={}'.format(HOST_NAME, PORT_NUMBER, self.id)
 
     def to_cp_dict(self):
         if 'bdrip' in self.name.lower() and (
@@ -146,7 +146,7 @@ class RuTrackerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                 search_requests = search_to_search_requests(s)
             logging.info(
                 'Got {} search requests, taking first {}'.format(len(search_requests), min(len(search_requests), 5)))
-            search_requests = search_requests[:3]
+            search_requests = search_requests[:5]
 
             logging.info('Searching on RuTracker for results...')
             search_results = search_requests_to_search_results(search_requests)

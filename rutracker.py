@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import cookielib
+import copy
 
 from urllib import urlencode, quote, unquote
 from urllib2 import build_opener, HTTPCookieProcessor, URLError, HTTPError
@@ -11,6 +12,13 @@ import os
 import re
 import logging
 from config import credentials
+
+RUTRACKER_DOMAIN_DEFAULT = 'https://rutracker.net'
+
+try:
+    from config import RUTRACKER_DOMAIN
+except ImportError:
+    RUTRACKER_DOMAIN = RUTRACKER_DOMAIN_DEFAULT
 
 cache_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cache')
 
@@ -36,13 +44,11 @@ def dict_encode(dict, encoding='cp1251'):
     return encoded_dict
 
 
-class rutracker(object):
-    """rutracker.org search engine plugin for qBittorrent."""
-    url = 'https://rutracker.org'
-    name = 'rutracker.org'
-    login_url = 'https://rutracker.org/forum/login.php'
-    download_url = 'https://rutracker.org/forum/dl.php'
-    search_url = 'https://rutracker.org/forum/tracker.php'
+class RuTracker(object):
+    base_url = RUTRACKER_DOMAIN.strip('/')
+    login_url = base_url + '/forum/login.php'
+    download_url = base_url + '/forum/dl.php'
+    search_url = base_url + '/forum/tracker.php'
 
     def __init__(self):
         """Initialize rutracker search engine, signing in using given credentials."""
@@ -62,7 +68,7 @@ class rutracker(object):
                                 "HTTP request to {} failed with status: {}".format(self.login_url, response.getcode()),
                                 response.info(), None)
             # Check if login was successful using cookies.
-            if not 'bb_data' in [cookie.name for cookie in self.cj]:
+            if 'bb_session' not in [cookie.name for cookie in self.cj]:
                 raise ValueError("Unable to connect using given credentials.")
             else:
                 logging.info("Login successful.")
@@ -114,9 +120,10 @@ class rutracker(object):
                                 'leech': None,
                                 'desc_link': None, }
 
-        def __init__(self, download_url, first_page=True):
+        def __init__(self, base_url, download_url, first_page=True):
             """Initialize the parser with url and tell him if he's on the first page of results or not."""
             HTMLParser.__init__(self)
+            self.base_url = base_url
             self.download_url = download_url
             self.first_page = first_page
             self.results = []
@@ -125,11 +132,11 @@ class rutracker(object):
             self.cat_re = re.compile(r'tracker\.php\?f=\d+')
             self.name_re = re.compile(r'viewtopic\.php\?t=\d+')
             self.pages_re = re.compile(r'tracker\.php\?.*?start=(\d+)')
-            self.current_item = self.current_item_default
+            self.current_item = copy.copy(self.current_item_default)
 
         def reset_current(self):
             """Reset current_item (i.e. torrent) to default values."""
-            self.current_item = self.current_item_default
+            self.current_item = copy.copy(self.current_item_default)
 
         def close(self):
             """Override default close() method just to define additional processing."""
@@ -178,8 +185,8 @@ class rutracker(object):
                     self.current_item['cat'] = True
                 elif 'data-topic_id' in params and self.name_re.search(
                         params['href']):  # data-topic_id is needed to avoid conflicts.
-                    self.current_item['desc_link'] = 'https://rutracker.org/forum/' + params['href']
-                    self.current_item['link'] = 'https://rutracker.org/forum/dl.php?t=' + params['data-topic_id']
+                    self.current_item['desc_link'] = self.base_url + '/forum/' + params['href']
+                    self.current_item['link'] = self.base_url + '/forum/dl.php?t=' + params['data-topic_id']
                     self.current_item['name'] = True
                 # If we're on the first page of results, we search for other pages.
                 elif self.first_page:
@@ -219,7 +226,7 @@ class rutracker(object):
         """Search for what starting on specified page. Defaults to first page of results."""
         logging.debug(u"parse_search({}, {}, {})".format(what, start, first_page))
         # Search.
-        parser = self.Parser(self.download_url, first_page)
+        parser = self.Parser(self.base_url, first_page)
         try:
             response = self.opener.open('{}?nm={}&start={}'.format(self.search_url, quote(what.encode('utf-8')), start))
             # Only continue if response status is OK.
@@ -237,7 +244,7 @@ class rutracker(object):
 
         # PrettyPrint each torrent found.
         for torrent in parser.results:
-            torrent['engine_url'] = self.url
+            torrent['engine_url'] = self.base_url
             if __name__ != "__main__":  # This is just to avoid printing when I debug.
                 pass
                 # prettyPrinter(torrent)
