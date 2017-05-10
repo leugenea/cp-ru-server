@@ -10,7 +10,14 @@ import rutracker
 import json
 import math
 from imdb import IMDb
-from config import HOST_NAME, PORT_NUMBER
+
+HOST_NAME_DEFAULT = '0.0.0.0'
+PORT_NUMBER_DEFAULT = 9000
+
+try:
+    from config import HOST_NAME, PORT_NUMBER
+except ImportError:
+    HOST_NAME, PORT_NUMBER = HOST_NAME_DEFAULT, PORT_NUMBER_DEFAULT
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -43,10 +50,10 @@ class SearchResult(object):
 
     def to_cp_dict(self):
         if 'bdrip' in self.name.lower() and (
-                    '720p' in self.name.lower() or '1080p' in self.name.lower() or '2160p' in self.name.lower()):
+                            '720p' in self.name.lower() or '1080p' in self.name.lower() or '2160p' in self.name.lower()):
             self.name = re.sub('[bB][dD][rR]ip', '', self.name)
         if 'web-dl' in self.name.lower() or 'webdl' in self.name.lower() and (
-                    '720p' in self.name.lower() or '1080p' in self.name.lower() or '2160p' in self.name.lower()):
+                            '720p' in self.name.lower() or '1080p' in self.name.lower() or '2160p' in self.name.lower()):
             self.name = re.sub('[wW][eE][bB]-?[dD][lL]', '', self.name)
         res = {
             'release_name': self.name,
