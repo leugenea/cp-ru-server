@@ -50,5 +50,9 @@ For now this is my want list:
 * search for ability to download .torrent files directly from RuTracker
 * code cleanup/refactoring
 
+# Contributing
+Feel free to fork and rewrite/fix code, but let's make this repo pretty useful.
+If you have some fixes and/or improvement, please, create pull requests!
+
 # Special thanks
 RuTracker searcher/downloader based on external project by [Skymirrh](https://github.com/Skymirrh) located [here](https://github.com/Skymirrh/qBittorrent-rutracker-plugin).
